@@ -1,21 +1,91 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Realtime Markdown Viewer</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MarkThatDown - Realtime Markdown Editor</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
 </head>
 
-<body class="container-fluid">
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-edit"></i>
+                    <h1>MarkThatDown</h1>
+                </div>
+                <div class="header-actions">
+                    <button id="fullscreen-btn" class="btn btn-secondary">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                    <button id="download-btn" class="btn btn-primary">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                </div>
+            </div>
+        </header>
 
-    <section class="row">
-        <textarea class="col-md-6 full-height" id="pad">Write markdown text here..</textarea>
-        <div class="col-md-6 full-height" id="markdown"></div>
-    </section>
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="editor-container">
+                <!-- Editor Panel -->
+                <div class="panel editor-panel">
+                    <div class="panel-header">
+                        <h3><i class="fas fa-edit"></i> Editor</h3>
+                        <div class="panel-actions">
+                            <button id="clear-btn" class="btn btn-sm btn-outline">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <textarea id="pad" placeholder="Write your markdown here...&#10;&#10;# Welcome to MarkThatDown!&#10;&#10;This is a **real-time** collaborative markdown editor.&#10;&#10;## Features:&#10;- Real-time collaboration&#10;- Live preview&#10;- Modern UI&#10;- Export functionality&#10;&#10;Start typing to see the magic happen!"></textarea>
+                    </div>
+                </div>
 
+                <!-- Preview Panel -->
+                <div class="panel preview-panel">
+                    <div class="panel-header">
+                        <h3><i class="fas fa-eye"></i> Preview</h3>
+                        <div class="panel-actions">
+                            <button id="toggle-preview-btn" class="btn btn-sm btn-outline">
+                                <i class="fas fa-eye-slash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div id="markdown" class="markdown-content"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Status Bar -->
+        <footer class="status-bar">
+            <div class="status-content">
+                <div class="status-item">
+                    <i class="fas fa-users"></i>
+                    <span id="user-count">1</span> users online
+                </div>
+                <div class="status-item">
+                    <i class="fas fa-clock"></i>
+                    <span id="last-saved">Just now</span>
+                </div>
+                <div class="status-item">
+                    <i class="fas fa-link"></i>
+                    <span id="document-id">home</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
     <script src="https://cdn.rawgit.com/showdownjs/showdown/1.0.2/dist/showdown.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="script.js"></script>
-
 </body>
 </html> 
