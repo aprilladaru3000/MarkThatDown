@@ -1,213 +1,274 @@
-# MarkThatDown
+# MarkThatDown - Advanced Real-time Collaborative Markdown Editor
 
-A modern, real-time collaborative markdown editor with a beautiful dark theme UI.
-
-![MarkThatDown](https://img.shields.io/badge/MarkThatDown-Realtime%20Markdown%20Editor-blue)
-![Node.js](https://img.shields.io/badge/Node.js-14.0.0+-green)
-![Socket.IO](https://img.shields.io/badge/Socket.IO-4.7.2+-orange)
+A modern, feature-rich collaborative markdown editor with real-time collaboration, advanced formatting, and beautiful UI.
 
 ## ✨ Features
 
-- **Real-time Collaboration**: Multiple users can edit the same document simultaneously
-- **Live Preview**: See your markdown rendered in real-time as you type
-- **Modern Dark UI**: Beautiful dark theme with smooth animations
-- **Export Functionality**: Download your markdown files with one click
-- **Fullscreen Mode**: Toggle fullscreen for distraction-free editing
-- **Keyboard Shortcuts**: 
-  - `Ctrl/Cmd + S`: Export document
-  - `Ctrl/Cmd + Enter`: Toggle preview panel
-  - `Tab`: Insert tab character
-- **User Tracking**: See how many users are currently editing
-- **Auto-save**: Automatic saving every 30 seconds
-- **Responsive Design**: Works perfectly on desktop and mobile devices
-- **Document Sharing**: Share documents via URL (e.g., `/my-document`)
+### 🚀 Core Features
+- **Real-time Collaboration** - Multiple users can edit simultaneously
+- **Live Preview** - See your markdown rendered in real-time
+- **Modern Dark/Light Theme** - Beautiful, responsive UI
+- **Auto-save** - Your work is automatically saved
+- **Export Functionality** - Download your documents in various formats
+
+### 🔐 Authentication & User Management
+- **User Registration & Login** - Secure user accounts
+- **JWT Authentication** - Secure token-based authentication
+- **User Profiles** - Personalized experience
+- **Session Management** - Persistent login sessions
+
+### 📝 Advanced Markdown Features
+- **Enhanced Markdown Support** - Tables, task lists, strikethrough, emojis
+- **Mathematical Expressions** - MathJax integration for LaTeX math
+- **Diagrams & Charts** - Mermaid.js for flowcharts, sequence diagrams
+- **Code Highlighting** - Syntax highlighting for code blocks
+- **Rich Text Toolbar** - Quick formatting buttons
+
+### 🔍 Search & Replace
+- **Find Text** - Search within your document
+- **Replace Text** - Replace individual occurrences
+- **Replace All** - Replace all occurrences at once
+- **Case Sensitive** - Toggle case sensitivity
+- **Whole Word** - Match whole words only
+
+### 📋 Document Templates
+- **Meeting Notes** - Structured meeting documentation
+- **Project Plan** - Comprehensive project planning
+- **Blog Post** - Blog writing template
+- **Technical Documentation** - API and system documentation
+- **Research Paper** - Academic writing template
+- **Blank Document** - Start from scratch
+
+### 📚 Document Management
+- **Version History** - Track document changes over time
+- **Document Comments** - Add comments and annotations
+- **Document Sharing** - Share documents with others
+- **File Upload** - Upload images and files
+
+### 🎨 UI/UX Features
+- **Theme Toggle** - Switch between dark and light themes
+- **Fullscreen Mode** - Distraction-free editing
+- **Responsive Design** - Works on all devices
+- **Keyboard Shortcuts** - Power user features
+- **Notifications** - Real-time feedback
+
+### 🔧 Developer Features
+- **RESTful API** - Complete API for integration
+- **WebSocket Support** - Real-time communication
+- **File Upload API** - Handle file uploads
+- **Health Check Endpoints** - Monitor application status
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-
-- Node.js 14.0.0 or higher
-- npm 6.0.0 or higher
+- Node.js (>= 14.0.0)
+- npm (>= 6.0.0)
 
 ### Installation
 
-1. Clone the repository:
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/MarkThatDown.git
+   cd MarkThatDown
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Start the server**
+   ```bash
+   npm start
+   ```
+
+4. **Open your browser**
+   ```
+   http://localhost:8000
+   ```
+
+### Development Mode
 ```bash
-git clone https://github.com/yourusername/MarkThatDown.git
-cd MarkThatDown
+npm run dev
 ```
 
-2. Install dependencies:
-```bash
-npm install
-```
+## 📖 Usage Guide
 
-3. Start the server:
-```bash
-npm start
-```
+### Getting Started
+1. **Create a new document** - Visit `http://localhost:8000` for a new document
+2. **Share with others** - Share the URL with collaborators
+3. **Start editing** - Begin typing in the editor panel
+4. **See live preview** - Watch your markdown render in real-time
 
-4. Open your browser and visit:
-```
-http://localhost:8000
-```
+### Authentication
+1. **Register** - Click "Register" to create an account
+2. **Login** - Use your credentials to log in
+3. **Stay logged in** - Your session persists across browser sessions
 
-## 📖 Usage
+### Using Templates
+1. **Open templates** - Click the template button in the editor
+2. **Select template** - Choose from available templates
+3. **Customize** - Modify the template to fit your needs
 
-### Basic Usage
+### Search & Replace
+1. **Open search** - Press `Ctrl+F` or click the search button
+2. **Enter search term** - Type what you want to find
+3. **Configure options** - Set case sensitivity and whole word matching
+4. **Replace** - Use replace or replace all as needed
 
-1. **Start Editing**: Simply start typing in the editor panel
-2. **Live Preview**: Your markdown will be rendered in real-time in the preview panel
-3. **Collaboration**: Share the URL with others to collaborate in real-time
-4. **Export**: Click the "Export" button to download your markdown file
+### Adding Comments
+1. **Open comments panel** - Click the comments button
+2. **Add comment** - Type your comment and press Enter
+3. **View comments** - See all comments in the panel
 
-### Document Sharing
+### Exporting Documents
+1. **Click export** - Use the export button in the header
+2. **Choose format** - Select your preferred format
+3. **Download** - Your document will be downloaded
 
-- **Home Document**: Visit `/` for the default document
-- **Custom Documents**: Visit `/{document-id}` to create or join a specific document
-- **Examples**: 
-  - `/meeting-notes` for meeting notes
-  - `/project-docs` for project documentation
-  - `/ideas` for brainstorming
+## ⌨️ Keyboard Shortcuts
 
-### Markdown Features
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+S` | Save/Export document |
+| `Ctrl+Enter` | Toggle preview |
+| `Ctrl+F` | Open search |
+| `Ctrl+T` | Toggle theme |
+| `Tab` | Insert tab in editor |
 
-The editor supports all standard markdown syntax:
+## 🎨 Themes
 
+### Dark Theme (Default)
+- Modern dark interface
+- Easy on the eyes
+- Professional appearance
+
+### Light Theme
+- Clean, bright interface
+- Traditional document appearance
+- Better for daytime use
+
+## 📝 Markdown Features
+
+### Basic Formatting
 ```markdown
-# Headers
-## Subheaders
+# Heading 1
+## Heading 2
+### Heading 3
 
 **Bold text**
 *Italic text*
+~~Strikethrough~~
 
-- Bullet points
-- Lists
+- Unordered list
+- Another item
 
-1. Numbered lists
+1. Ordered list
 2. Second item
 
-[Links](https://example.com)
+> Blockquote
+```
 
-![Images](image.jpg)
+### Advanced Features
+```markdown
+| Table | Header |
+|-------|--------|
+| Cell 1 | Cell 2 |
 
-`Inline code`
+- [ ] Task list item
+- [x] Completed task
+
+`inline code`
 
 ```javascript
-// Code blocks
+// Code block
 function hello() {
     console.log("Hello World!");
 }
 ```
 
-> Blockquotes
+![Image](image-url)
 
-| Tables | Are | Cool |
-|--------|-----|------|
-| Data   | In  | Rows |
-
-~~Strikethrough~~
-
-- [x] Task lists
-- [ ] Unchecked items
+[Link](url)
 ```
 
-## 🛠️ Technology Stack
+### Mathematical Expressions
+```markdown
+Inline math: $E = mc^2$
 
-- **Backend**: Node.js, Express.js
-- **Real-time Communication**: Socket.IO
-- **Frontend**: Vanilla JavaScript, HTML5, CSS3
-- **Markdown Parser**: Showdown.js
-- **UI Framework**: Custom CSS with CSS Variables
-- **Icons**: Font Awesome 6
-- **Fonts**: Inter (Google Fonts)
-
-## 📁 Project Structure
-
-```
-MarkThatDown/
-├── server.js          # Express server with Socket.IO
-├── package.json       # Dependencies and scripts
-├── views/
-│   └── pad.ejs       # Main HTML template
-├── public/
-│   ├── style.css      # Modern CSS styling
-│   └── script.js      # Frontend JavaScript
-└── README.md         # This file
+Block math:
+$$
+\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
+$$
 ```
 
-## 🔧 Configuration
+### Diagrams
+```markdown
+```mermaid
+graph TD
+    A[Start] --> B{Decision?}
+    B -->|Yes| C[OK]
+    B -->|No| D[Cancel]
+```
+```
+
+## 🔧 API Reference
+
+### Authentication Endpoints
+- `POST /api/register` - Register new user
+- `POST /api/login` - User login
+
+### Document Endpoints
+- `GET /api/document/:id` - Get document info
+- `GET /api/document/:id/history` - Get document history
+- `POST /api/document/:id/export/pdf` - Export to PDF
+
+### File Upload
+- `POST /api/upload` - Upload files
+
+### Health Check
+- `GET /health` - Application status
+
+## 🛠️ Configuration
 
 ### Environment Variables
-
-- `PORT`: Server port (default: 8000)
+```bash
+PORT=8000                    # Server port
+JWT_SECRET=your-secret-key   # JWT signing secret
+NODE_ENV=production          # Environment mode
+```
 
 ### Customization
-
-You can customize the appearance by modifying the CSS variables in `public/style.css`:
-
-```css
-:root {
-    --primary-color: #6366f1;
-    --background: #0f172a;
-    --surface: #1e293b;
-    /* ... more variables */
-}
-```
-
-## 🚀 Deployment
-
-### Heroku
-
-1. Create a Heroku app
-2. Add the following to your `package.json`:
-```json
-{
-  "scripts": {
-    "start": "node server.js"
-  },
-  "engines": {
-    "node": ">=14.0.0"
-  }
-}
-```
-3. Deploy using Heroku CLI or GitHub integration
-
-### Other Platforms
-
-The app can be deployed to any Node.js hosting platform:
-- Vercel
-- Netlify
-- Railway
-- DigitalOcean App Platform
+- Modify `public/style.css` for theme customization
+- Edit `views/pad.ejs` for layout changes
+- Update `server.js` for server-side features
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Commit your changes: `git commit -am 'Add feature'`
-4. Push to the branch: `git push origin feature-name`
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
 5. Submit a pull request
 
-## 📝 License
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
-- [Showdown.js](https://github.com/showdownjs/showdown) for markdown parsing
-- [Socket.IO](https://socket.io/) for real-time communication
-- [Font Awesome](https://fontawesome.com/) for icons
-- [Inter Font](https://rsms.me/inter/) for typography
+- [Showdown.js](https://github.com/showdownjs/showdown) - Markdown to HTML converter
+- [Socket.IO](https://socket.io/) - Real-time communication
+- [Font Awesome](https://fontawesome.com/) - Icons
+- [MathJax](https://www.mathjax.org/) - Mathematical expressions
+- [Mermaid.js](https://mermaid-js.github.io/) - Diagrams and charts
 
 ## 📞 Support
 
-If you have any questions or need help, please:
-
-1. Check the [Issues](https://github.com/yourusername/MarkThatDown/issues) page
-2. Create a new issue if your problem isn't already listed
-3. Join our [Discord](https://discord.gg/markthatdown) community
+- **Issues**: [GitHub Issues](https://github.com/yourusername/MarkThatDown/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/yourusername/MarkThatDown/discussions)
+- **Email**: support@markthatdown.com
 
 ---
 
-Made with ❤️ by [Your Name] 
+**Made with ❤️ by the MarkThatDown Team** 

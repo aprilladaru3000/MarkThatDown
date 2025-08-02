@@ -7,6 +7,11 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
+    <!-- MathJax for mathematical expressions -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- Mermaid for diagrams -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 </head>
 
 <body>
@@ -18,7 +23,28 @@
                     <i class="fas fa-edit"></i>
                     <h1>MarkThatDown</h1>
                 </div>
+                
+                <!-- Authentication Section -->
+                <div class="auth-section" id="auth-section">
+                    <button id="login-btn" class="btn btn-outline">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                    <button id="register-btn" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Register
+                    </button>
+                </div>
+                
+                <div class="user-section" id="user-section" style="display: none;">
+                    <span id="username-display"></span>
+                    <button id="logout-btn" class="btn btn-outline">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+                
                 <div class="header-actions">
+                    <button id="theme-toggle-btn" class="btn btn-secondary">
+                        <i class="fas fa-moon"></i>
+                    </button>
                     <button id="fullscreen-btn" class="btn btn-secondary">
                         <i class="fas fa-expand"></i>
                     </button>
@@ -37,13 +63,79 @@
                     <div class="panel-header">
                         <h3><i class="fas fa-edit"></i> Editor</h3>
                         <div class="panel-actions">
+                            <button id="search-btn" class="btn btn-sm btn-outline" title="Search & Replace">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <button id="template-btn" class="btn btn-sm btn-outline" title="Templates">
+                                <i class="fas fa-file-alt"></i>
+                            </button>
+                            <button id="history-btn" class="btn btn-sm btn-outline" title="Document History">
+                                <i class="fas fa-history"></i>
+                            </button>
                             <button id="clear-btn" class="btn btn-sm btn-outline">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
                     </div>
+                    
+                    <!-- Toolbar -->
+                    <div class="editor-toolbar">
+                        <button class="toolbar-btn" data-insert="**bold**" title="Bold">
+                            <i class="fas fa-bold"></i>
+                        </button>
+                        <button class="toolbar-btn" data-insert="*italic*" title="Italic">
+                            <i class="fas fa-italic"></i>
+                        </button>
+                        <button class="toolbar-btn" data-insert="~~strikethrough~~" title="Strikethrough">
+                            <i class="fas fa-strikethrough"></i>
+                        </button>
+                        <div class="toolbar-separator"></div>
+                        <button class="toolbar-btn" data-insert="# " title="Heading 1">
+                            <i class="fas fa-heading"></i>1
+                        </button>
+                        <button class="toolbar-btn" data-insert="## " title="Heading 2">
+                            <i class="fas fa-heading"></i>2
+                        </button>
+                        <button class="toolbar-btn" data-insert="### " title="Heading 3">
+                            <i class="fas fa-heading"></i>3
+                        </button>
+                        <div class="toolbar-separator"></div>
+                        <button class="toolbar-btn" data-insert="- " title="Unordered List">
+                            <i class="fas fa-list-ul"></i>
+                        </button>
+                        <button class="toolbar-btn" data-insert="1. " title="Ordered List">
+                            <i class="fas fa-list-ol"></i>
+                        </button>
+                        <button class="toolbar-btn" data-insert="> " title="Blockquote">
+                            <i class="fas fa-quote-left"></i>
+                        </button>
+                        <div class="toolbar-separator"></div>
+                        <button class="toolbar-btn" data-insert="[link](url)" title="Link">
+                            <i class="fas fa-link"></i>
+                        </button>
+                        <button class="toolbar-btn" data-insert="![alt](image-url)" title="Image">
+                            <i class="fas fa-image"></i>
+                        </button>
+                        <button class="toolbar-btn" data-insert="`code`" title="Inline Code">
+                            <i class="fas fa-code"></i>
+                        </button>
+                        <button class="toolbar-btn" data-insert="```\ncode block\n```" title="Code Block">
+                            <i class="fas fa-file-code"></i>
+                        </button>
+                        <div class="toolbar-separator"></div>
+                        <button class="toolbar-btn" data-insert="| Column 1 | Column 2 |\n|----------|----------|\n| Data 1   | Data 2   |" title="Table">
+                            <i class="fas fa-table"></i>
+                        </button>
+                        <button class="toolbar-btn" data-insert="---" title="Horizontal Rule">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button class="toolbar-btn" data-insert="$$math$$" title="Math Expression">
+                            <i class="fas fa-square-root-alt"></i>
+                        </button>
+                    </div>
+                    
                     <div class="panel-body">
-                        <textarea id="pad" placeholder="Write your markdown here...&#10;&#10;# Welcome to MarkThatDown!&#10;&#10;This is a **real-time** collaborative markdown editor.&#10;&#10;## Features:&#10;- Real-time collaboration&#10;- Live preview&#10;- Modern UI&#10;- Export functionality&#10;&#10;Start typing to see the magic happen!"></textarea>
+                        <textarea id="pad" placeholder="Write your markdown here...&#10;&#10;# Welcome to MarkThatDown!&#10;&#10;This is a **real-time** collaborative markdown editor.&#10;&#10;## Features:&#10;- Real-time collaboration&#10;- Live preview&#10;- Modern UI&#10;- Export functionality&#10;- Document history&#10;- Comments & annotations&#10;- Math expressions&#10;- Diagrams & charts&#10;&#10;Start typing to see the magic happen!"></textarea>
                     </div>
                 </div>
 
@@ -52,6 +144,9 @@
                     <div class="panel-header">
                         <h3><i class="fas fa-eye"></i> Preview</h3>
                         <div class="panel-actions">
+                            <button id="comments-btn" class="btn btn-sm btn-outline" title="Comments">
+                                <i class="fas fa-comments"></i>
+                            </button>
                             <button id="toggle-preview-btn" class="btn btn-sm btn-outline">
                                 <i class="fas fa-eye-slash"></i>
                             </button>
@@ -79,8 +174,167 @@
                     <i class="fas fa-link"></i>
                     <span id="document-id">home</span>
                 </div>
+                <div class="status-item">
+                    <i class="fas fa-code-branch"></i>
+                    <span id="version-info">v1</span>
+                </div>
             </div>
         </footer>
+    </div>
+
+    <!-- Modals -->
+    
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-sign-in-alt"></i> Login</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-plus"></i> Register</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="register-form">
+                    <div class="form-group">
+                        <label for="register-username">Username</label>
+                        <input type="text" id="register-username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email">Email</label>
+                        <input type="email" id="register-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Password</label>
+                        <input type="password" id="register-password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Modal -->
+    <div id="search-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-search"></i> Search & Replace</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="search-input">Find</label>
+                    <input type="text" id="search-input" placeholder="Search text...">
+                </div>
+                <div class="form-group">
+                    <label for="replace-input">Replace with</label>
+                    <input type="text" id="replace-input" placeholder="Replace text...">
+                </div>
+                <div class="search-options">
+                    <label>
+                        <input type="checkbox" id="case-sensitive"> Case sensitive
+                    </label>
+                    <label>
+                        <input type="checkbox" id="whole-word"> Whole word
+                    </label>
+                </div>
+                <div class="search-actions">
+                    <button id="find-btn" class="btn btn-secondary">Find</button>
+                    <button id="replace-btn" class="btn btn-primary">Replace</button>
+                    <button id="replace-all-btn" class="btn btn-primary">Replace All</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Template Modal -->
+    <div id="template-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-file-alt"></i> Document Templates</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="template-grid">
+                    <div class="template-item" data-template="blank">
+                        <h4>Blank Document</h4>
+                        <p>Start with a clean slate</p>
+                    </div>
+                    <div class="template-item" data-template="meeting-notes">
+                        <h4>Meeting Notes</h4>
+                        <p>Template for meeting documentation</p>
+                    </div>
+                    <div class="template-item" data-template="project-plan">
+                        <h4>Project Plan</h4>
+                        <p>Template for project planning</p>
+                    </div>
+                    <div class="template-item" data-template="blog-post">
+                        <h4>Blog Post</h4>
+                        <p>Template for blog writing</p>
+                    </div>
+                    <div class="template-item" data-template="technical-doc">
+                        <h4>Technical Documentation</h4>
+                        <p>Template for technical writing</p>
+                    </div>
+                    <div class="template-item" data-template="research-paper">
+                        <h4>Research Paper</h4>
+                        <p>Template for academic writing</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Modal -->
+    <div id="history-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-history"></i> Document History</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="history-list" class="history-list">
+                    <!-- History items will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comments Panel -->
+    <div id="comments-panel" class="comments-panel">
+        <div class="comments-header">
+            <h3><i class="fas fa-comments"></i> Comments</h3>
+            <button class="comments-close">&times;</button>
+        </div>
+        <div class="comments-body">
+            <div id="comments-list" class="comments-list">
+                <!-- Comments will be populated here -->
+            </div>
+            <div class="comment-input">
+                <textarea id="new-comment" placeholder="Add a comment..."></textarea>
+                <button id="add-comment-btn" class="btn btn-primary">Add Comment</button>
+            </div>
+        </div>
     </div>
 
     <!-- Scripts -->
