@@ -35,6 +35,21 @@ window.onload = function() {
     const templateBtn = document.getElementById('template-btn');
     const historyBtn = document.getElementById('history-btn');
     const commentsBtn = document.getElementById('comments-btn');
+    const mediaUploadBtn = document.getElementById('media-upload-btn');
+    const mediaGalleryBtn = document.getElementById('media-gallery-btn');
+    
+    // Media elements
+    const mediaGalleryPanel = document.getElementById('media-gallery-panel');
+    const mediaUploadModal = document.getElementById('media-upload-modal');
+    const uploadZone = document.getElementById('upload-zone');
+    const mediaFileInput = document.getElementById('media-file-input');
+    const mediaGalleryGrid = document.getElementById('media-gallery-grid');
+    const uploadProgress = document.getElementById('upload-progress');
+    const progressFill = document.getElementById('progress-fill');
+    const uploadStatus = document.getElementById('upload-status');
+    const uploadPreview = document.getElementById('upload-preview');
+    const uploadFilesBtn = document.getElementById('upload-files-btn');
+    const cancelUploadBtn = document.getElementById('cancel-upload-btn');
     
     // Authentication elements
     const authSection = document.getElementById('auth-section');
@@ -106,6 +121,10 @@ window.onload = function() {
         // Comments functionality
         commentsBtn.addEventListener('click', toggleComments);
         
+        // Media functionality
+        mediaUploadBtn.addEventListener('click', () => showModal(mediaUploadModal));
+        mediaGalleryBtn.addEventListener('click', toggleMediaGallery);
+        
         // Keyboard shortcuts
         setupKeyboardShortcuts();
         
@@ -174,6 +193,10 @@ window.onload = function() {
         document.getElementById('find-btn').addEventListener('click', findText);
         document.getElementById('replace-btn').addEventListener('click', replaceText);
         document.getElementById('replace-all-btn').addEventListener('click', replaceAllText);
+        
+        // Media functionality
+        initializeMediaUpload();
+        initializeDragAndDrop();
     }
     
     function initializeComments() {
@@ -187,6 +210,69 @@ window.onload = function() {
         newCommentInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && e.ctrlKey) {
                 addComment();
+            }
+        });
+    }
+    
+    function initializeMediaUpload() {
+        // File input change handler
+        mediaFileInput.addEventListener('change', handleFileSelection);
+        
+        // Upload button handler
+        uploadFilesBtn.addEventListener('click', uploadFiles);
+        
+        // Cancel upload handler
+        cancelUploadBtn.addEventListener('click', () => {
+            hideModal(mediaUploadModal);
+            resetUploadForm();
+        });
+        
+        // Close modal handler
+        document.querySelector('#media-upload-modal .modal-close').addEventListener('click', () => {
+            hideModal(mediaUploadModal);
+            resetUploadForm();
+        });
+    }
+    
+    function initializeDragAndDrop() {
+        // Drag and drop for upload zone
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('drag-over');
+        });
+        
+        uploadZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('drag-over');
+        });
+        
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('drag-over');
+            
+            const files = Array.from(e.dataTransfer.files);
+            handleFiles(files);
+        });
+        
+        // Drag and drop for editor
+        pad.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            pad.style.borderColor = 'var(--primary-color)';
+        });
+        
+        pad.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            pad.style.borderColor = '';
+        });
+        
+        pad.addEventListener('drop', (e) => {
+            e.preventDefault();
+            pad.style.borderColor = '';
+            
+            const files = Array.from(e.dataTransfer.files);
+            if (files.length > 0) {
+                handleFiles(files);
+                showModal(mediaUploadModal);
             }
         });
     }
@@ -307,6 +393,260 @@ window.onload = function() {
     
     function toggleComments() {
         commentsPanel.classList.toggle('show');
+    }
+    
+    function toggleMediaGallery() {
+        mediaGalleryPanel.classList.toggle('show');
+        if (mediaGalleryPanel.classList.contains('show')) {
+            loadMediaGallery();
+        }
+    }
+    
+    // Media handling functions
+    function handleFileSelection(e) {
+        const files = Array.from(e.target.files);
+        handleFiles(files);
+    }
+    
+    function handleFiles(files) {
+        const validFiles = files.filter(file => {
+            const maxSize = 50 * 1024 * 1024; // 50MB
+            if (file.size > maxSize) {
+                showNotification(`File ${file.name} is too large (max 50MB)`, 'error');
+                return false;
+            }
+            return true;
+        });
+        
+        if (validFiles.length > 0) {
+            showFilePreviews(validFiles);
+            uploadFilesBtn.disabled = false;
+        }
+    }
+    
+    function showFilePreviews(files) {
+        uploadPreview.innerHTML = '';
+        
+        files.forEach(file => {
+            const previewItem = document.createElement('div');
+            previewItem.className = 'preview-item';
+            
+            let previewContent = '';
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    previewContent = `<img src="${e.target.result}" alt="${file.name}">`;
+                    previewItem.innerHTML = `
+                        ${previewContent}
+                        <div class="preview-info">
+                            <div class="preview-name">${file.name}</div>
+                            <div class="preview-size">${formatFileSize(file.size)}</div>
+                        </div>
+                        <button class="preview-remove" onclick="removePreviewItem(this)">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                const icon = getFileIcon(file.type);
+                previewContent = `<div class="media-icon"><i class="${icon}"></i></div>`;
+                previewItem.innerHTML = `
+                    ${previewContent}
+                    <div class="preview-info">
+                        <div class="preview-name">${file.name}</div>
+                        <div class="preview-size">${formatFileSize(file.size)}</div>
+                    </div>
+                    <button class="preview-remove" onclick="removePreviewItem(this)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+            }
+            
+            uploadPreview.appendChild(previewItem);
+        });
+    }
+    
+    function getFileIcon(mimeType) {
+        if (mimeType.startsWith('image/')) return 'fas fa-image';
+        if (mimeType.startsWith('video/')) return 'fas fa-video';
+        if (mimeType.startsWith('audio/')) return 'fas fa-music';
+        if (mimeType.includes('pdf')) return 'fas fa-file-pdf';
+        if (mimeType.includes('word')) return 'fas fa-file-word';
+        if (mimeType.includes('zip') || mimeType.includes('rar') || mimeType.includes('7z')) return 'fas fa-file-archive';
+        return 'fas fa-file';
+    }
+    
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    function removePreviewItem(button) {
+        button.closest('.preview-item').remove();
+        if (uploadPreview.children.length === 0) {
+            uploadFilesBtn.disabled = true;
+        }
+    }
+    
+    async function uploadFiles() {
+        const files = Array.from(mediaFileInput.files);
+        if (files.length === 0) return;
+        
+        const formData = new FormData();
+        files.forEach(file => {
+            formData.append('files', file);
+        });
+        
+        uploadProgress.style.display = 'block';
+        uploadFilesBtn.disabled = true;
+        uploadStatus.textContent = 'Uploading...';
+        
+        try {
+            const response = await fetch('/api/upload-multiple', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                // Add media to document
+                result.files.forEach(file => {
+                    socket.emit('add-media', {
+                        filename: file.filename,
+                        url: file.fileUrl,
+                        type: getFileType(file.filename),
+                        size: file.size
+                    });
+                });
+                
+                showNotification(`${result.files.length} file(s) uploaded successfully!`, 'success');
+                hideModal(mediaUploadModal);
+                resetUploadForm();
+                loadMediaGallery();
+            } else {
+                showNotification('Upload failed', 'error');
+            }
+        } catch (error) {
+            showNotification('Upload failed: ' + error.message, 'error');
+        } finally {
+            uploadProgress.style.display = 'none';
+            uploadFilesBtn.disabled = false;
+        }
+    }
+    
+    function getFileType(filename) {
+        const ext = filename.split('.').pop().toLowerCase();
+        if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext)) return 'image';
+        if (['mp4', 'webm', 'ogg', 'mov'].includes(ext)) return 'video';
+        if (['mp3', 'wav', 'ogg', 'm4a'].includes(ext)) return 'audio';
+        if (['pdf', 'doc', 'docx', 'txt'].includes(ext)) return 'document';
+        if (['zip', 'rar', '7z'].includes(ext)) return 'archive';
+        return 'unknown';
+    }
+    
+    function resetUploadForm() {
+        mediaFileInput.value = '';
+        uploadPreview.innerHTML = '';
+        uploadFilesBtn.disabled = true;
+        uploadProgress.style.display = 'none';
+    }
+    
+    async function loadMediaGallery() {
+        try {
+            const response = await fetch(`/api/document/${documentId}/media`);
+            const data = await response.json();
+            
+            mediaGalleryGrid.innerHTML = '';
+            
+            if (data.media && data.media.length > 0) {
+                data.media.forEach(media => {
+                    displayMediaItem(media);
+                });
+            } else {
+                mediaGalleryGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-secondary);">No media files yet</p>';
+            }
+        } catch (error) {
+            showNotification('Failed to load media gallery', 'error');
+        }
+    }
+    
+    function displayMediaItem(media) {
+        const mediaItem = document.createElement('div');
+        mediaItem.className = 'media-item';
+        mediaItem.setAttribute('data-media-id', media.id);
+        
+        let content = '';
+        if (media.type === 'image') {
+            content = `<img src="${media.url}" alt="${media.filename}" onclick="insertMediaIntoEditor('${media.url}', '${media.type}')">`;
+        } else {
+            const icon = getFileIconByType(media.type);
+            content = `<div class="media-icon" onclick="insertMediaIntoEditor('${media.url}', '${media.type}')"><i class="${icon}"></i></div>`;
+        }
+        
+        mediaItem.innerHTML = `
+            ${content}
+            <div class="media-name">${media.filename}</div>
+            <div class="media-size">${formatFileSize(media.size)}</div>
+            <div class="media-actions">
+                <button class="media-action-btn" onclick="insertMediaIntoEditor('${media.url}', '${media.type}')" title="Insert">
+                    <i class="fas fa-plus"></i>
+                </button>
+                <button class="media-action-btn" onclick="deleteMedia('${media.id}')" title="Delete">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+        
+        mediaGalleryGrid.appendChild(mediaItem);
+    }
+    
+    function getFileIconByType(type) {
+        switch (type) {
+            case 'image': return 'fas fa-image';
+            case 'video': return 'fas fa-video';
+            case 'audio': return 'fas fa-music';
+            case 'document': return 'fas fa-file-alt';
+            case 'archive': return 'fas fa-file-archive';
+            default: return 'fas fa-file';
+        }
+    }
+    
+    function insertMediaIntoEditor(url, type) {
+        let markdown = '';
+        
+        switch (type) {
+            case 'image':
+                markdown = `![Image](${url})`;
+                break;
+            case 'video':
+                markdown = `![Video](${url})`;
+                break;
+            case 'audio':
+                markdown = `[Audio File](${url})`;
+                break;
+            default:
+                markdown = `[${url.split('/').pop()}](${url})`;
+        }
+        
+        insertAtCursor(pad, markdown);
+        pad.focus();
+        showNotification('Media inserted into editor', 'success');
+    }
+    
+    async function deleteMedia(mediaId) {
+        if (!confirm('Are you sure you want to delete this media file?')) return;
+        
+        try {
+            socket.emit('remove-media', { mediaId });
+            showNotification('Media removed', 'success');
+        } catch (error) {
+            showNotification('Failed to remove media', 'error');
+        }
     }
     
     // Authentication functions
@@ -706,6 +1046,9 @@ Summary of key findings and future research directions.
             }
         });
         
+        // Process media files with enhanced rendering
+        html = processMediaFiles(html);
+        
         markdownArea.innerHTML = html;
         
         // Render Mermaid diagrams
@@ -718,6 +1061,56 @@ Summary of key findings and future research directions.
         
         // Update last saved time
         updateLastSaved();
+    }
+    
+    function processMediaFiles(html) {
+        // Process image links to add captions and better styling
+        html = html.replace(/<img([^>]+)>/g, (match, attrs) => {
+            const srcMatch = attrs.match(/src="([^"]+)"/);
+            const altMatch = attrs.match(/alt="([^"]*)"/);
+            
+            if (srcMatch) {
+                const src = srcMatch[1];
+                const alt = altMatch ? altMatch[1] : '';
+                const filename = src.split('/').pop();
+                
+                return `
+                    <div class="media-container">
+                        <img${attrs}>
+                        ${alt ? `<div class="media-caption">${alt}</div>` : ''}
+                    </div>
+                `;
+            }
+            return match;
+        });
+        
+        // Process video links
+        html = html.replace(/!\[Video\]\(([^)]+)\)/g, (match, url) => {
+            return `
+                <div class="media-container">
+                    <video controls>
+                        <source src="${url}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="media-caption">Video: ${url.split('/').pop()}</div>
+                </div>
+            `;
+        });
+        
+        // Process audio links
+        html = html.replace(/\[Audio File\]\(([^)]+)\)/g, (match, url) => {
+            return `
+                <div class="media-container">
+                    <audio controls>
+                        <source src="${url}" type="audio/mpeg">
+                        Your browser does not support the audio tag.
+                    </audio>
+                    <div class="media-caption">Audio: ${url.split('/').pop()}</div>
+                </div>
+            `;
+        });
+        
+        return html;
     }
     
     // Check if content has changed
@@ -771,6 +1164,21 @@ Summary of key findings and future research directions.
     
     socket.on('new-comment', function(comment) {
         displayComment(comment);
+    });
+    
+    socket.on('media-added', function(media) {
+        if (mediaGalleryPanel.classList.contains('show')) {
+            displayMediaItem(media);
+        }
+        showNotification(`Media added by ${media.addedBy}`, 'info');
+    });
+    
+    socket.on('media-removed', function(media) {
+        const mediaItem = document.querySelector(`[data-media-id="${media.id}"]`);
+        if (mediaItem) {
+            mediaItem.remove();
+        }
+        showNotification(`Media removed by ${media.addedBy}`, 'info');
     });
     
     socket.on('connect', function() {
@@ -872,4 +1280,9 @@ Summary of key findings and future research directions.
         }
     `;
     document.head.appendChild(style);
+    
+    // Make functions globally available for HTML onclick handlers
+    window.removePreviewItem = removePreviewItem;
+    window.insertMediaIntoEditor = insertMediaIntoEditor;
+    window.deleteMedia = deleteMedia;
 }; 

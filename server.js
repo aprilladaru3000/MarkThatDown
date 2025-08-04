@@ -25,11 +25,60 @@ const storage = multer.diskStorage({
     cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname);
+    // Generate unique filename with original extension
+    const uniqueName = Date.now() + '-' + Math.random().toString(36).substr(2, 9) + path.extname(file.originalname);
+    cb(null, uniqueName);
   }
 });
 
-const upload = multer({ storage: storage });
+// Enhanced file filter for rich media
+const fileFilter = (req, file, cb) => {
+  // Allowed file types
+  const allowedTypes = {
+    // Images
+    'image/jpeg': true,
+    'image/png': true,
+    'image/gif': true,
+    'image/webp': true,
+    'image/svg+xml': true,
+    // Videos
+    'video/mp4': true,
+    'video/webm': true,
+    'video/ogg': true,
+    'video/quicktime': true,
+    // Audio
+    'audio/mpeg': true,
+    'audio/wav': true,
+    'audio/ogg': true,
+    'audio/mp4': true,
+    // Documents
+    'application/pdf': true,
+    'text/plain': true,
+    'application/msword': true,
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': true,
+    // Archives
+    'application/zip': true,
+    'application/x-rar-compressed': true,
+    'application/x-7z-compressed': true
+  };
+
+  if (allowedTypes[file.mimetype]) {
+    cb(null, true);
+  } else {
+    cb(new Error('File type not supported'), false);
+  }
+};
+
+const upload = multer({ 
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: {
+    fileSize: 50 * 1024 * 1024 // 50MB limit
+  }
+});
+
+// Multiple file upload for rich media
+const uploadMultiple = upload.array('files', 10); // Allow up to 10 files
 
 // set the view engine to ejs
 app.set('view engine', 'ejs');
@@ -149,8 +198,85 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
   });
 });
 
+// Multiple file upload endpoint
+app.post('/api/upload-multiple', uploadMultiple, (req, res) => {
+  if (!req.files || req.files.length === 0) {
+    return res.status(400).json({ error: 'No files uploaded' });
+  }
+
+  const uploadedFiles = req.files.map(file => ({
+    fileUrl: `/uploads/${file.filename}`,
+    filename: file.originalname,
+    size: file.size
+  }));
+
+  res.json({ success: true, files: uploadedFiles });
+});
+
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Get all media files for a document
+app.get('/api/document/:id/media', (req, res) => {
+  const documentId = req.params.id;
+  const document = activeDocuments.get(documentId);
+  
+  if (!document) {
+    return res.status(404).json({ error: 'Document not found' });
+  }
+  
+  // In a real app, you'd store media references in the document
+  // For now, we'll return an empty array
+  res.json({ media: document.media || [] });
+});
+
+// Delete a media file
+app.delete('/api/media/:filename', (req, res) => {
+  const filename = req.params.filename;
+  const filePath = path.join(__dirname, 'uploads', filename);
+  
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
+    res.json({ success: true, message: 'File deleted successfully' });
+  } else {
+    res.status(404).json({ error: 'File not found' });
+  }
+});
+
+// Get file information
+app.get('/api/media/:filename/info', (req, res) => {
+  const filename = req.params.filename;
+  const filePath = path.join(__dirname, 'uploads', filename);
+  
+  if (fs.existsSync(filePath)) {
+    const stats = fs.statSync(filePath);
+    const ext = path.extname(filename).toLowerCase();
+    
+    let fileType = 'unknown';
+    if (['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'].includes(ext)) {
+      fileType = 'image';
+    } else if (['.mp4', '.webm', '.ogg', '.mov'].includes(ext)) {
+      fileType = 'video';
+    } else if (['.mp3', '.wav', '.ogg', '.m4a'].includes(ext)) {
+      fileType = 'audio';
+    } else if (['.pdf', '.doc', '.docx', '.txt'].includes(ext)) {
+      fileType = 'document';
+    } else if (['.zip', '.rar', '.7z'].includes(ext)) {
+      fileType = 'archive';
+    }
+    
+    res.json({
+      filename: filename,
+      originalName: filename.split('-').slice(1).join('-'), // Remove timestamp
+      size: stats.size,
+      type: fileType,
+      uploadedAt: stats.birthtime,
+      url: `/uploads/${filename}`
+    });
+  } else {
+    res.status(404).json({ error: 'File not found' });
+  }
+});
 
 // Document history endpoint
 app.get('/api/document/:id/history', (req, res) => {
@@ -215,7 +341,8 @@ io.on('connection', function(socket) {
         createdAt: new Date(),
         lastModified: new Date(),
         version: 1,
-        comments: []
+        comments: [],
+        media: [] // Track media files in document
       });
     }
     
@@ -288,6 +415,43 @@ io.on('connection', function(socket) {
     socket.to(currentDocumentId).emit('user-stopped-typing', {
       username: currentUser.username
     });
+  });
+  
+  socket.on('add-media', function(data) {
+    if (currentDocumentId) {
+      const document = activeDocuments.get(currentDocumentId);
+      if (document) {
+        const mediaItem = {
+          id: uuidv4(),
+          filename: data.filename,
+          url: data.url,
+          type: data.type,
+          size: data.size,
+          addedBy: currentUser.username,
+          addedAt: new Date()
+        };
+        
+        document.media.push(mediaItem);
+        
+        // Broadcast media addition to all users in document
+        io.to(currentDocumentId).emit('media-added', mediaItem);
+      }
+    }
+  });
+  
+  socket.on('remove-media', function(data) {
+    if (currentDocumentId) {
+      const document = activeDocuments.get(currentDocumentId);
+      if (document) {
+        const mediaIndex = document.media.findIndex(m => m.id === data.mediaId);
+        if (mediaIndex !== -1) {
+          const removedMedia = document.media.splice(mediaIndex, 1)[0];
+          
+          // Broadcast media removal to all users in document
+          io.to(currentDocumentId).emit('media-removed', removedMedia);
+        }
+      }
+    }
   });
   
   socket.on('disconnect', function() {
