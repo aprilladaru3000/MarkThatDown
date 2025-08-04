@@ -132,6 +132,13 @@
                         <button class="toolbar-btn" data-insert="$$math$$" title="Math Expression">
                             <i class="fas fa-square-root-alt"></i>
                         </button>
+                        <div class="toolbar-separator"></div>
+                        <button id="media-upload-btn" class="toolbar-btn" title="Upload Media">
+                            <i class="fas fa-upload"></i>
+                        </button>
+                        <button id="media-gallery-btn" class="toolbar-btn" title="Media Gallery">
+                            <i class="fas fa-images"></i>
+                        </button>
                     </div>
                     
                     <div class="panel-body">
@@ -333,6 +340,58 @@
             <div class="comment-input">
                 <textarea id="new-comment" placeholder="Add a comment..."></textarea>
                 <button id="add-comment-btn" class="btn btn-primary">Add Comment</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Media Gallery Panel -->
+    <div id="media-gallery-panel" class="media-gallery-panel">
+        <div class="media-gallery-header">
+            <h3><i class="fas fa-images"></i> Media Gallery</h3>
+            <button class="media-gallery-close">&times;</button>
+        </div>
+        <div class="media-gallery-body">
+            <div class="media-upload-area" id="media-upload-area">
+                <div class="upload-zone" id="upload-zone">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Drag & drop files here or click to upload</p>
+                    <input type="file" id="media-file-input" multiple accept="image/*,video/*,audio/*,application/pdf,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/zip,application/x-rar-compressed,application/x-7z-compressed" style="display: none;">
+                    <button class="btn btn-primary" onclick="document.getElementById('media-file-input').click()">
+                        <i class="fas fa-upload"></i> Choose Files
+                    </button>
+                </div>
+            </div>
+            <div id="media-gallery-grid" class="media-gallery-grid">
+                <!-- Media items will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Media Upload Modal -->
+    <div id="media-upload-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-upload"></i> Upload Media</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="upload-progress" id="upload-progress" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <p id="upload-status">Uploading...</p>
+                </div>
+                <div class="upload-preview" id="upload-preview">
+                    <!-- File previews will be shown here -->
+                </div>
+                <div class="upload-actions">
+                    <button id="upload-files-btn" class="btn btn-primary" disabled>
+                        <i class="fas fa-upload"></i> Upload Files
+                    </button>
+                    <button id="cancel-upload-btn" class="btn btn-outline">
+                        Cancel
+                    </button>
+                </div>
             </div>
         </div>
     </div>
